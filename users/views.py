@@ -24,14 +24,14 @@ def register(request):
         user = User.objects.create_user(username=username, password=password)
         login(request, user)
 
-        return redirect('/dashboard/')
+        return redirect('/backups/dashboard/')
 
     return render(request, 'users/register.html')
 
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('/dashboard/')
+        return redirect('/backups/dashboard/')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -41,7 +41,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('/dashboard/')
+            return redirect('/backups/dashboard/')
         else:
             return render(request, 'users/login.html', {
                 'error': 'Invalid credentials'
