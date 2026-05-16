@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Create account — Vault{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <h1>Create account</h1>
+    <p class="auth-subtitle">Start backing up your files in seconds.</p>
+
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <ul class="errorlist">
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {% if form.non_field_errors %}
+        <ul class="errorlist">
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary">Create account</button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a href="{% url 'login' %}">Sign in</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

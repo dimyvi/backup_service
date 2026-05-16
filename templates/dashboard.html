@@ -1,15 +1,201 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
+{% extends 'base_dashboard.html' %}
 
-<h1>Dashboard</h1>
+{% block title %}Dashboard{% endblock %}
 
-<p>Welcome, {{ request.user.username }}</p>
+{% block content %}
 
-<a href="/users/logout/">Logout</a>
+<div class="dashboard">
 
-</body>
-</html>
+    <!-- LEFT -->
+    <div class="sidebar">
+
+        <!-- upload -->
+        <div class="upload-box">
+
+            <form
+                method="post"
+                enctype="multipart/form-data"
+                class="upload-form"
+            >
+
+                {% csrf_token %}
+
+                <!-- LEFT -->
+                <div class="upload-left">
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Backup name"
+                        required
+                    >
+
+                    <label class="file-upload">
+
+                        file
+
+                        <input
+                            id="file-input"
+                            type="file"
+                            name="file"
+                            required
+                            onchange="handleFileSelect(this)"
+                        >
+
+                    </label>
+
+                    <div class="file-name" id="file-name">
+                        file not selected
+                    </div>
+
+                </div>
+
+                <!-- RIGHT -->
+                <div class="upload-right">
+
+                    <button
+                        type="button"
+                        class="remove-file hidden"
+                        id="remove-file-btn"
+                        onclick="clearFile()"
+                    >
+                        ×
+                    </button>
+
+                    <button type="submit" class="btn">
+                        upload
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- backups -->
+        <div class="backup-list">
+
+            <div class="backup-header">
+                <div>backup name</div>
+                <div>size</div>
+                <div>upload date</div>
+                <div></div>
+            </div>
+
+            <div class="backup-scroll">
+
+                {% if backups %}
+
+                    {% for backup in backups %}
+
+                        <div class="backup-row">
+
+                            <div class="backup-name">
+                                {{ backup.name|default:"Unnamed" }}
+                            </div>
+
+                            <div class="backup-size">
+                                {% if backup.file %}
+                                    {{ backup.file.size|filesizeformat }}
+                                {% endif %}
+                            </div>
+
+                            <div class="backup-date">
+                                {{ backup.created_at|date:"Y-m-d H:i" }}
+                            </div>
+
+                            <div class="backup-actions">
+
+                                {% if backup.file %}
+                                    <a
+                                        href="{{ backup.file.url }}"
+                                        class="btn"
+                                    >
+                                        download
+                                    </a>
+                                {% endif %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'delete_backup' backup.id %}"
+                                    onsubmit="return confirm('Delete this backup?')"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn danger-btn"
+                                    >
+                                        delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty">
+                        No backups yet
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="content-panel"></div>
+
+</div>
+
+<script>
+
+function handleFileSelect(input) {
+
+    const fileName =
+        input.files[0]?.name || 'file not selected';
+
+    document.getElementById('file-name').innerText =
+        fileName;
+
+    const removeBtn =
+        document.getElementById('remove-file-btn');
+
+    if (input.files.length > 0) {
+        removeBtn.classList.remove('hidden');
+    } else {
+        removeBtn.classList.add('hidden');
+    }
+}
+
+function clearFile() {
+
+    const input =
+        document.getElementById('file-input');
+
+    const label =
+        document.getElementById('file-name');
+
+    const removeBtn =
+        document.getElementById('remove-file-btn');
+
+    input.value = "";
+
+    label.innerText =
+        "file not selected";
+
+    removeBtn.classList.add('hidden');
+}
+
+</script>
+
+{% endblock %}
