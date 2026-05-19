@@ -153,7 +153,123 @@
     </div>
 
     <!-- RIGHT -->
-    <div class="content-panel"></div>
+    <div class="content-panel">
+
+        <!-- STATS -->
+        <div class="stats-panel">
+
+            <div class="stats-title">
+                storage overview
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-item">
+
+                    <div class="stat-label">
+                        Total backups
+                    </div>
+
+                    <div class="stat-value">
+                        {{ total_backups }}
+                    </div>
+
+                </div>
+
+                <div class="stat-item">
+
+                    <div class="stat-label">
+                        Total size
+                    </div>
+
+                    <div class="stat-value">
+                        {{ total_size }}
+                    </div>
+
+                </div>
+
+                <div class="stat-item">
+
+                    <div class="stat-label">
+                        Last upload
+                    </div>
+
+                    <div class="stat-value">
+
+                        {% if last_upload %}
+                            {{ last_upload|date:"d M H:i" }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <div class="stat-item">
+
+                    <div class="stat-label">
+                        Your storage usage
+                    </div>
+
+                    <div class="stat-value">
+                        {{ usage_percent }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ACTIVITY -->
+        <div class="activity-panel">
+
+            <div class="stats-title">
+                recent activity
+            </div>
+
+            <div class="activity-list">
+
+                {% if activities %}
+
+                    {% for activity in activities %}
+
+                        <div class="activity-item">
+
+                            <div class="activity-main">
+
+                                <span class="activity-action">
+                                    {{ activity.action }}
+                                </span>
+
+                                <span class="activity-file">
+                                    {{ activity.filename }}
+                                </span>
+
+                            </div>
+
+                            <div class="activity-date">
+                                {{ activity.created_at|date:"d M H:i" }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty">
+                        No activity yet
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

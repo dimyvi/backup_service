@@ -1,10 +1,12 @@
+<!-- base_dashboard.html -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 
     <meta charset="UTF-8">
 
-        <link
+    <link
         rel="icon"
         href="/static/favicon.ico"
     >
@@ -305,6 +307,108 @@
 
             border: 1px solid #000;
             background: #fff;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           STATS
+        ========================== */
+
+        .stats-panel {
+            padding: 24px;
+        }
+
+        .stats-title {
+            font-size: 15px;
+            font-weight: bold;
+
+            margin-bottom: 24px;
+
+            text-transform: lowercase;
+        }
+
+        .stats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .stat-item {
+            padding-bottom: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           ACTIVITY
+        ========================== */
+
+        .activity-panel {
+            border-top: 1px solid #ddd;
+
+            padding: 24px;
+
+            flex: 1;
+            min-height: 0;
+
+            overflow-y: auto;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 12px 0;
+
+            border-bottom: 1px solid #eee;
+
+            gap: 12px;
+        }
+
+        .activity-main {
+            display: flex;
+            gap: 8px;
+
+            min-width: 0;
+        }
+
+        .activity-action {
+            font-weight: bold;
+            text-transform: lowercase;
+        }
+
+        .activity-file {
+            color: #444;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .activity-date {
+            color: #777;
+            font-size: 13px;
+
+            flex-shrink: 0;
         }
 
         /* =========================
@@ -336,6 +440,7 @@
     </style>
 
 </head>
+
 <body>
 
 <header class="topbar">
