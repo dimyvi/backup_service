@@ -6,3 +6,4 @@ media/backups/
 .env
 .venv/
 media/
+htmlcov
