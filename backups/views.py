@@ -1,11 +1,45 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from django.template.defaultfilters import filesizeformat
 
 from .models import Backup, ActivityLog
 
 
+MAX_STORAGE = 10 * 1024 * 1024 * 1024  # 10 GB
+
+
 @login_required
 def dashboard(request):
+
+    backups = Backup.objects.filter(
+        user=request.user
+    ).order_by("-created_at")
+
+    activities = ActivityLog.objects.filter(
+        user=request.user
+    ).order_by("-created_at")[:10]
+
+    total_backups = backups.count()
+
+    total_size_raw = backups.aggregate(
+        total=Sum("size")
+    )["total"] or 0
+
+    total_size = filesizeformat(total_size_raw)
+
+    usage_percent = round(
+        (total_size_raw / MAX_STORAGE) * 100,
+        1
+    )
+
+    last_upload = (
+        backups.first().created_at
+        if backups.exists()
+        else None
+    )
+
+    error = None
 
     if request.method == "POST":
 
@@ -14,66 +48,40 @@ def dashboard(request):
 
         if file and name:
 
-            backup = Backup.objects.create(
-                user=request.user,
-                name=name,
-                file=file,
-                size=file.size
-            )
+            # STORAGE LIMIT CHECK
+            if total_size_raw + file.size > MAX_STORAGE:
 
-            # activity log
-            ActivityLog.objects.create(
-                user=request.user,
-                action="uploaded",
-                filename=backup.name
-            )
+                error = (
+                    "Storage limit exceeded. "
+                    "Delete old backups before uploading new files."
+                )
 
-        return redirect("dashboard")
+            else:
 
-    backups = Backup.objects.filter(
-        user=request.user
-    ).order_by("-created_at")
+                backup = Backup.objects.create(
+                    user=request.user,
+                    name=name,
+                    file=file,
+                    size=file.size
+                )
 
-    activities = ActivityLog.objects.filter(
-        user=request.user
-    )[:10]
+                ActivityLog.objects.create(
+                    user=request.user,
+                    action="uploaded",
+                    filename=backup.name
+                )
 
-    total_backups = backups.count()
-
-    total_size_bytes = sum(
-        b.size for b in backups if b.size
-    )
-
-    # format size
-    if total_size_bytes >= 1024 ** 3:
-        total_size = f"{total_size_bytes / (1024 ** 3):.1f} GB"
-
-    elif total_size_bytes >= 1024 ** 2:
-        total_size = f"{total_size_bytes / (1024 ** 2):.1f} MB"
-
-    else:
-        total_size = f"{total_size_bytes / 1024:.1f} KB"
-
-    last_upload = (
-        backups.first().created_at
-        if backups.exists()
-        else None
-    )
-
-    # 10 GB limit
-    storage_limit = 10 * 1024 * 1024 * 1024
-
-    usage_percent = round(
-        (total_size_bytes / storage_limit) * 100
-    )
+                return redirect("dashboard")
 
     return render(request, "dashboard.html", {
         "backups": backups,
         "activities": activities,
         "total_backups": total_backups,
         "total_size": total_size,
+        "total_size_raw": total_size_raw,
         "last_upload": last_upload,
         "usage_percent": usage_percent,
+        "error": error,
     })
 
 
@@ -86,7 +94,9 @@ def delete_backup(request, backup_id):
         user=request.user
     )
 
-    # activity log
+    # DELETE PHYSICAL FILE
+    backup.file.delete(save=False)
+
     ActivityLog.objects.create(
         user=request.user,
         action="deleted",

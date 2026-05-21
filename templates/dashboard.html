@@ -9,10 +9,20 @@
     <!-- LEFT -->
     <div class="sidebar">
 
+        <!-- ERROR -->
+        {% if error %}
+
+            <div class="error-box">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
         <!-- upload -->
         <div class="upload-box">
 
             <form
+                id="upload-form"
                 method="post"
                 enctype="multipart/form-data"
                 class="upload-form"
@@ -275,10 +285,18 @@
 
 <script>
 
+const MAX_STORAGE = 10 * 1024 * 1024 * 1024;
+
+const CURRENT_SIZE =
+    {{ total_size_raw|default:0 }};
+
+
 function handleFileSelect(input) {
 
+    const file = input.files[0];
+
     const fileName =
-        input.files[0]?.name || 'file not selected';
+        file?.name || 'file not selected';
 
     document.getElementById('file-name').innerText =
         fileName;
@@ -290,6 +308,23 @@ function handleFileSelect(input) {
         removeBtn.classList.remove('hidden');
     } else {
         removeBtn.classList.add('hidden');
+    }
+
+    // STORAGE CHECK
+    if (file) {
+
+        const futureSize =
+            CURRENT_SIZE + file.size;
+
+        if (futureSize > MAX_STORAGE) {
+
+            alert(
+                "Storage limit exceeded.\n" +
+                "Delete old backups before uploading."
+            );
+
+            clearFile();
+        }
     }
 }
 

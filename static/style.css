@@ -148,3 +148,14 @@ h1 {
 .btn:hover {
     opacity: 0.8;
 }
+
+.error-box {
+    border: 1px solid #c40000;
+    background: #ffe9e9;
+
+    color: #900;
+
+    padding: 12px;
+
+    font-size: 14px;
+}
