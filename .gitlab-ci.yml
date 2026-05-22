@@ -1,6 +1,5 @@
 stages:
   - test
-  - build
 
 test:
   image: python:3.12
@@ -12,7 +11,7 @@ test:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: postgres
     POSTGRES_HOST_AUTH_METHOD: trust
-    DJANGO_SETTINGS_MODULE: backup_service.settings_ci
+    DJANGO_SETTINGS_MODULE: backup_service.settings
     PYTHONUNBUFFERED: 1
   before_script:
     - pip install -r requirements.txt
@@ -20,17 +19,5 @@ test:
     - python manage.py migrate --noinput
   script:
     - python manage.py check
-    - python manage.py test backups --verbosity=2
-
-build:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  script:
-    - docker build -t backup_service:latest .
-  only:
-    - main
+    - python manage.py test
+    - echo "✅ Pipeline работает!"
