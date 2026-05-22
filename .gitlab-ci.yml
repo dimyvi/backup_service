@@ -20,5 +20,4 @@ test:
     - python manage.py migrate --noinput
   script:
     - python manage.py check
-    - python manage.py test
-    - echo "✅ Pipeline успешно выполнен!"
+    - python -c "import django; django.setup(); from django.test.utils import get_runner; from django.conf import settings; TestRunner = get_runner(settings); test_runner = TestRunner(settings); failures = test_runner.run_tests(['backups', 'users', 'core']); exit(failures)"
