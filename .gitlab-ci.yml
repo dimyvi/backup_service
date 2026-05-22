@@ -5,6 +5,9 @@ stages:
 test:
   image: python:3.12
   stage: test
+  before_script:
+    - pip --version
+    - python --version
   script:
     - pip install -r requirements.txt
     - pytest
@@ -14,5 +17,8 @@ build:
   stage: build
   services:
     - docker:dind
+  before_script:
+    - docker --version
+    - docker info
   script:
     - docker build -t backup_service .
