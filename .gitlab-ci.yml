@@ -5,17 +5,22 @@ stages:
 test:
   image: python:3.12
   stage: test
+  services:
+    - postgres:15
   variables:
-    DJANGO_SETTINGS_MODULE: "backup_service.settings"
-    PYTHONUNBUFFERED: "1"
+    POSTGRES_DB: backup_service_test
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_HOST_AUTH_METHOD: trust
+    DJANGO_SETTINGS_MODULE: backup_service.settings_ci
+    PYTHONUNBUFFERED: 1
   before_script:
     - pip install -r requirements.txt
-    - python manage.py migrate
+    - pip install psycopg2-binary
+    - python manage.py migrate --noinput
   script:
     - python manage.py check
     - python manage.py test backups --verbosity=2
-  after_script:
-    - echo "Тесты пройдены"
 
 build:
   stage: build
@@ -27,6 +32,5 @@ build:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker build -t backup_service:latest .
-    - echo "Docker образ собран"
   only:
     - main
