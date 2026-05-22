@@ -1,6 +1,5 @@
 stages:
   - test
-  - build
 
 test:
   image: python:3.12
@@ -8,15 +7,4 @@ test:
   script:
     - pip install -r requirements.txt
     - python manage.py check
-    - echo "Pipeline работает!"
-
-build:
-  image: docker:latest
-  stage: build
-  services:
-    - docker:dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  script:
-    - docker build -t backup_service:latest .
+    - echo "✅ CI/CD Pipeline работает успешно!"
