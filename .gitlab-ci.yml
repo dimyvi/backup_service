@@ -11,9 +11,10 @@ test:
   stage: test
   before_script:
     - pip install -r requirements.txt
+    - pip install pytest pytest-django
   script:
     - python manage.py check
-    - python manage.py test backups users core --keepdb 2>&1 || python manage.py test
+    - pytest -v
 
 build:
   stage: build
