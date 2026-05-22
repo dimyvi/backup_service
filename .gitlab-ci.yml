@@ -16,8 +16,8 @@ test:
     PYTHONUNBUFFERED: 1
   before_script:
     - pip install -r requirements.txt
-    - pip install psycopg2-binary
+    - pip install psycopg2-binary pytest pytest-django
     - python manage.py migrate --noinput
   script:
     - python manage.py check
-    - python -c "import django; django.setup(); from django.test.utils import get_runner; from django.conf import settings; TestRunner = get_runner(settings); test_runner = TestRunner(settings); failures = test_runner.run_tests(['backups', 'users', 'core']); exit(failures)"
+    - pytest -v
