@@ -5,6 +5,7 @@ SECRET_KEY = 'ci-test-secret-key-123456789'
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
+# Используем переменные окружения для PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

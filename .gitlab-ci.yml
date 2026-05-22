@@ -11,7 +11,8 @@ test:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: postgres
     POSTGRES_HOST_AUTH_METHOD: trust
-    DJANGO_SETTINGS_MODULE: backup_service.settings
+    POSTGRES_HOST: postgres
+    DJANGO_SETTINGS_MODULE: backup_service.settings_ci
     PYTHONUNBUFFERED: 1
   before_script:
     - pip install -r requirements.txt
@@ -20,4 +21,4 @@ test:
   script:
     - python manage.py check
     - python manage.py test
-    - echo "✅ Pipeline работает!"
+    - echo "✅ Pipeline успешно выполнен!"
