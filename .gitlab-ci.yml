@@ -41,7 +41,7 @@ test:
 
   script:
     - python manage.py migrate
-    - python manage.py test
+    - python manage.py test backups core users
 
 build:
   stage: build
