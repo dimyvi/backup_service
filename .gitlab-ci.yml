@@ -33,7 +33,6 @@ test:
     - python -m pip install --upgrade pip
     - pip install -r requirements.txt
 
-    - echo "Waiting for PostgreSQL..."
     - |
       while ! nc -z postgres 5432; do
         sleep 1
