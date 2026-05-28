@@ -3,59 +3,39 @@ stages:
   - build
 
 variables:
-  POSTGRES_DB: backupdb
-  POSTGRES_USER: backupuser
-  POSTGRES_PASSWORD: password
-  POSTGRES_HOST: postgres
-  POSTGRES_PORT: 5432
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE"
 
-  DB_NAME: backupdb
-  DB_USER: backupuser
-  DB_PASSWORD: password
-  DB_HOST: postgres
-  DB_PORT: 5432
-
-  SECRET_KEY: testsecret
-  DEBUG: "True"
-  ALLOWED_HOSTS: "*"
 
 test:
   stage: test
-
+  tags:
+    - ci-runner
   image: python:3.12
-
   services:
-    - name: postgres:16
-      alias: postgres
-
+    - postgres:16
+  variables:
+    POSTGRES_DB: testdb
+    POSTGRES_USER: testuser
+    POSTGRES_PASSWORD: testpass
+    DB_HOST: postgres
   before_script:
-    - apt-get update && apt-get install -y netcat-openbsd
-    - python -m pip install --upgrade pip
+    - pip install --upgrade pip
     - pip install -r requirements.txt
-
-    - |
-      while ! nc -z postgres 5432; do
-        sleep 1
-      done
-
   script:
     - python manage.py migrate
     - python manage.py test backups core users
 
+
 build:
   stage: build
-
+  tags:
+    - ci-runner
   image: docker:24
-
   services:
-    - docker:24-dind
-
+    - docker:dind
   variables:
-    DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-
-  before_script:
-    - docker info
-
   script:
-    - docker build -t backup-service .
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t $IMAGE_NAME:latest .
+    - docker push $IMAGE_NAME:latest
