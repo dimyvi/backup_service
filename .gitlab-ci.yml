@@ -25,6 +25,7 @@ test:
     - python manage.py migrate
     - python manage.py test backups core users
 
+
 build:
   stage: build
   tags:
