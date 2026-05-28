@@ -6,7 +6,7 @@ from django.template.defaultfilters import filesizeformat
 from .models import Backup, ActivityLog
 
 
-MAX_STORAGE = 10 * 1024 * 1024 * 1024  # 10 GB
+MAX_STORAGE = 10 * 1024 * 1024 * 1024
 
 
 @login_required
@@ -48,7 +48,6 @@ def dashboard(request):
 
         if file and name:
 
-            # STORAGE LIMIT CHECK
             if total_size_raw + file.size > MAX_STORAGE:
 
                 error = (

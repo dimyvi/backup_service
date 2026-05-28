@@ -1,4 +1,9 @@
 from django.test import TestCase
+import os
+import django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backup_service.settings')
+django.setup()
+
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from backups.models import Backup
