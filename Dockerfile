@@ -2,7 +2,10 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y netcat-openbsd \
+RUN apt-get update && apt-get install -y \
+    netcat-openbsd \
+    libpq-dev \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -13,4 +16,4 @@ COPY . .
 
 RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "./entrypoint.sh"]

@@ -2,6 +2,13 @@ stages:
   - test
   - build
 
+variables:
+  DB_NAME: backupdb
+  DB_USER: backupuser
+  DB_PASSWORD: backuppass
+  DB_HOST: postgres
+  DB_PORT: "5432"
+
 test:
   stage: test
   image: python:3.12
@@ -9,33 +16,28 @@ test:
   services:
     - name: postgres:16
       alias: postgres
-
-  variables:
-    DB_NAME: backupdb
-    DB_USER: postgres
-    DB_PASSWORD: postgres
-    DB_HOST: postgres
-    DB_PORT: "5432"
-    SECRET_KEY: "test"
-    DEBUG: "True"
+      variables:
+        POSTGRES_DB: backupdb
+        POSTGRES_USER: backupuser
+        POSTGRES_PASSWORD: backuppass
 
   before_script:
+    - pip install --upgrade pip
     - pip install -r requirements.txt
 
   script:
     - python manage.py migrate
-    - python manage.py test backups core users
-
+    - pytest
 
 build:
   stage: build
   image: docker:24
 
   services:
-    - docker:dind
+    - docker:24-dind
 
   variables:
     DOCKER_TLS_CERTDIR: ""
 
   script:
-    - docker build -t backup-service .
+    - docker build -t backup-service:latest .
