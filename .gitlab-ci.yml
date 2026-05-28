@@ -1,5 +1,6 @@
 stages:
   - test
+  - build
 
 variables:
   POSTGRES_DB: backupdb
@@ -21,11 +22,20 @@ services:
 test:
   stage: test
   image: python:3.12
-
   before_script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
-
   script:
     - python manage.py migrate
     - pytest
+
+
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
