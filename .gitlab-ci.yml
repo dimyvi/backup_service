@@ -2,41 +2,40 @@ stages:
   - test
   - build
 
-variables:
-  IMAGE_NAME: "$CI_REGISTRY_IMAGE"
-
-
 test:
   stage: test
-  tags:
-    - ci-runner
   image: python:3.12
+
   services:
-    - postgres:16
+    - name: postgres:16
+      alias: postgres
+
   variables:
-    POSTGRES_DB: testdb
-    POSTGRES_USER: testuser
-    POSTGRES_PASSWORD: testpass
+    DB_NAME: backupdb
+    DB_USER: postgres
+    DB_PASSWORD: postgres
     DB_HOST: postgres
+    DB_PORT: "5432"
+    SECRET_KEY: "test"
+    DEBUG: "True"
+
   before_script:
-    - pip install --upgrade pip
     - pip install -r requirements.txt
+
   script:
     - python manage.py migrate
     - python manage.py test backups core users
 
 
-
 build:
   stage: build
-  tags:
-    - ci-runner
   image: docker:24
+
   services:
     - docker:dind
+
   variables:
     DOCKER_TLS_CERTDIR: ""
+
   script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker build -t $IMAGE_NAME:latest .
-    - docker push $IMAGE_NAME:latest
+    - docker build -t backup-service .
