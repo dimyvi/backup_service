@@ -33,8 +33,12 @@ test:
 build:
   stage: build
   image: docker:24
+
   services:
     - docker:dind
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+
   script:
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker build -t backup-service:latest .
