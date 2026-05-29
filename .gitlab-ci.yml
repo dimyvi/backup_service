@@ -33,6 +33,18 @@ test:
     - pytest
 
 
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker build -t $IMAGE_NAME:latest .
+
+
+
 
   only:
     - main
