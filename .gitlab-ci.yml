@@ -42,10 +42,6 @@ build:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker build -t $IMAGE_NAME:latest .
-    - docker save $IMAGE_NAME:latest > image.tar
-  artifacts:
-    paths:
-      - image.tar
 
 
 deploy:
