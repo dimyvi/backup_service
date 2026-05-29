@@ -33,26 +33,11 @@ test:
     - pytest
 
 
-build:
-  stage: build
-  image: docker:24
-  services:
-    - docker:dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-  script:
-    - docker build -t $IMAGE_NAME:latest .
-
-  only:
-    - main
-
 deploy:
   stage: deploy
   image: alpine:latest
 
-  only:
-    - main
-    -
+
   before_script:
     - apk add --no-cache openssh-client
     - mkdir -p ~/.ssh
@@ -64,6 +49,8 @@ deploy:
     - ssh dv@$VM3_IP "
         cd /home/dv/app &&
         git pull origin main &&
-        docker compose down || true &&
         docker compose up -d --build
       "
+
+  only:
+    - main
