@@ -58,6 +58,7 @@ deploy:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $VM3_IP >> ~/.ssh/known_hosts
 
+
   script:
     - ssh dv@$VM3_IP "
         cd /home/dv/app &&
